@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calculadora estimativa de pintura fotocatalítica y dióxido de titanio.">
+  <meta name="theme-color" content="#205b45">
+  <title>Calculadora Fotocatalítica</title>
+  <style>
+    :root {
+      --green: #205b45;
+      --green-dark: #174632;
+      --green-soft: #eaf3ed;
+      --ink: #20342b;
+      --muted: #63756b;
+      --line: #dce7df;
+      --bg: #f3f7f4;
+      --white: #fff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 28px 16px 44px;
+      background: var(--bg); color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .wrap { width: 100%; max-width: 760px; margin: 0 auto; }
+    header {
+      background: linear-gradient(135deg, #174632, #34795a);
+      color: white; padding: 30px; border-radius: 20px 20px 0 0;
+    }
+    .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: 11px; opacity: .85; font-weight: 700; }
+    h1 { margin: 10px 0 8px; font-size: clamp(27px, 5vw, 38px); }
+    header p { margin: 0; line-height: 1.55; max-width: 570px; color: #e3efe7; }
+    main {
+      background: var(--white); padding: 26px;
+      border: 1px solid var(--line); border-top: 0;
+      border-radius: 0 0 20px 20px; box-shadow: 0 12px 35px #183c2a0c;
+    }
+    h2 { font-size: 19px; margin: 0 0 16px; }
+    .section { padding-bottom: 22px; margin-bottom: 22px; border-bottom: 1px solid var(--line); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+    label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 7px; }
+    input {
+      width: 100%; border: 1px solid #cbd9d0; border-radius: 10px;
+      padding: 12px 13px; font-size: 16px; color: var(--ink); background: white;
+    }
+    input:focus { outline: 3px solid #205b4520; border-color: var(--green); }
+    .help { display: block; color: var(--muted); font-size: 12px; margin-top: 6px; line-height: 1.4; }
+    .ratio {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 14px 16px; border-radius: 12px; background: var(--green-soft);
+      color: var(--green-dark); font-size: 14px; line-height: 1.45;
+    }
+    .ratio strong { white-space: nowrap; }
+    button {
+      width: 100%; border: 0; border-radius: 11px; padding: 15px;
+      color: white; background: var(--green); font-size: 16px; font-weight: 700;
+      cursor: pointer; margin-top: 4px;
+    }
+    button:hover { background: var(--green-dark); }
+    .error { display: none; color: #a22d2d; background: #fff0f0; border: 1px solid #f0caca; border-radius: 10px; padding: 12px; margin-top: 14px; font-size: 14px; }
+    .results { display: none; margin-top: 26px; }
+    .results h2 { margin-bottom: 5px; }
+    .intro { color: var(--muted); font-size: 13px; margin: 0 0 16px; }
+    .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .card { background: #f5f8f6; border: 1px solid var(--line); border-radius: 13px; padding: 16px; }
+    .card.primary { background: var(--green-soft); border-color: #c8dfd0; }
+    .card span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .card strong { font-size: clamp(20px, 4vw, 25px); color: var(--green-dark); overflow-wrap: anywhere; }
+    .details { margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .detail { display: flex; justify-content: space-between; gap: 16px; padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: 14px; }
+    .detail:last-child { border-bottom: 0; }
+    .detail span { color: var(--muted); }
+    .detail strong { text-align: right; }
+    .note { color: var(--muted); font-size: 12px; line-height: 1.55; margin: 18px 0 0; }
+    .actions { display: flex; gap: 10px; margin-top: 14px; }
+    .actions button { margin: 0; background: #edf3ef; color: var(--green-dark); }
+    footer { color: var(--muted); text-align: center; font-size: 11px; line-height: 1.5; padding: 18px 10px 0; }
+    @media (max-width: 540px) {
+      body { padding: 14px 10px 30px; }
+      header, main { padding: 21px; }
+      .grid, .cards { grid-template-columns: 1fr; }
+      .ratio { align-items: flex-start; flex-direction: column; }
+      .detail { font-size: 13px; }
+    }
+    @media print {
+      body { background: white; padding: 0; }
+      header, main { box-shadow: none; }
+      button, .actions, footer { display: none !important; }
+      .results { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Herramienta de investigación</div>
+    <h1>Calculadora Fotocatalítica</h1>
+    <p>Estimación de pintura base y dióxido de titanio (TiO₂) necesarios para cubrir una superficie.</p>
+  </header>
+
+  <main>
+    <section class="section">
+      <h2>1. Dimensiones de la superficie</h2>
+      <div class="grid">
+        <div>
+          <label for="metros">Metros lineales totales de pared (m)</label>
+          <input id="metros" type="number" min="0.01" step="0.01" value="5">
+          <small class="help">Sumá los largos de todas las paredes que se van a pintar.</small>
+        </div>
+        <div>
+          <label for="altura">Altura de pared (m)</label>
+          <input id="altura" type="number" min="0.01" step="0.01" value="2.5">
+        </div>
+        <div>
+          <label for="aberturas">Puertas y ventanas (m²)</label>
+          <input id="aberturas" type="number" min="0" step="0.01" value="0">
+          <small class="help">Superficie que no recibirá pintura.</small>
+        </div>
+        <div>
+          <label for="manos">Cantidad de manos</label>
+          <input id="manos" type="number" min="1" step="1" value="1">
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>2. Propiedades de la pintura</h2>
+      <div class="grid">
+        <div>
+          <label for="rendimiento">Rendimiento (m²/L por mano)</label>
+          <input id="rendimiento" type="number" min="0.01" step="0.1" value="10">
+          <small class="help">Reemplazá el valor por el indicado por el fabricante o medido experimentalmente.</small>
+        </div>
+        <div>
+          <label for="densidad">Densidad de la pintura (kg/L)</label>
+          <input id="densidad" type="number" min="0.01" step="0.01" value="1.4">
+          <small class="help">Usá la densidad real de la pintura base.</small>
+        </div>
+        <div>
+          <label for="margen">Margen adicional (%)</label>
+          <input id="margen" type="number" min="0" max="100" step="1" value="10">
+          <small class="help">Reserva estimada para pérdidas y absorción.</small>
+        </div>
+      </div>
+    </section>
+
+    <div class="ratio">
+      <span><strong>Proporción experimental seleccionada</strong><br>20 g de TiO₂ por cada 100 g de pintura base.</span>
+      <strong>20 : 100</strong>
+    </div>
+
+    <button type="button" id="calculate">CALCULAR MATERIALES</button>
+    <div class="error" id="error" role="alert"></div>
+
+    <section class="results" id="results" aria-live="polite">
+      <h2>Resultados estimados</h2>
+      <p class="intro" id="summary"></p>
+      <div class="cards">
+        <div class="card">
+          <span>Pintura base necesaria</span>
+          <strong id="liters">—</strong>
+        </div>
+        <div class="card primary">
+          <span>Dióxido de titanio (TiO₂)</span>
+          <strong id="tio2">—</strong>
+        </div>
+      </div>
+      <div class="details">
+        <div class="detail"><span>Superficie neta</span><strong id="area">—</strong></div>
+        <div class="detail"><span>Superficie considerando las manos</span><strong id="areaHands">—</strong></div>
+        <div class="detail"><span>Masa de pintura base</span><strong id="paintMass">—</strong></div>
+        <div class="detail"><span>Masa total de mezcla fotocatalítica</span><strong id="totalMass">—</strong></div>
+        <div class="detail"><span>Proporción de TiO₂ en la mezcla final</span><strong>16,67 % en masa</strong></div>
+      </div>
+      <div class="actions">
+        <button type="button" id="print">Imprimir resultados</button>
+        <button type="button" id="reset">Restablecer valores</button>
+      </div>
+      <p class="note">
+        <strong>Alcance:</strong> el cálculo es una estimación de materiales. Supone que el rendimiento indicado corresponde a una mano y que la densidad ingresada representa la pintura base antes de agregar TiO₂. La proporción 20 g/100 g reproduce la formulación experimental seleccionada; no demuestra por sí sola la eficacia fotocatalítica ni establece una dosis óptima para cualquier producto o superficie. Verificá compatibilidad, dispersión, seguridad y rendimiento mediante ensayos.
+      </p>
+    </section>
+  </main>
+  <footer>Calculadora Fotocatalítica · Herramienta educativa de estimación de materiales</footer>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const defaults = {
+    metros: "5", altura: "2.5", aberturas: "0", manos: "1",
+    rendimiento: "10", densidad: "1.4", margen: "10"
+  };
+
+  function fmt(value, digits) {
+    return new Intl.NumberFormat("es-AR", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits
+    }).format(value);
+  }
+
+  function calculate() {
+    $("error").style.display = "none";
+
+    const v = {};
+    Object.keys(defaults).forEach(key => {
+      v[key] = Number($(key).value);
+    });
+
+    const positive = ["metros", "altura", "rendimiento", "densidad"];
+    for (const key of positive) {
+      if (!Number.isFinite(v[key]) || v[key] <= 0) {
+        return showError("Ingresá valores mayores que cero en las dimensiones, el rendimiento y la densidad.");
+      }
+    }
+    if (!Number.isFinite(v.aberturas) || v.aberturas < 0 ||
+        !Number.isFinite(v.manos) || !Number.isInteger(v.manos) || v.manos < 1 ||
+        !Number.isFinite(v.margen) || v.margen < 0 || v.margen > 100) {
+      return showError("Revisá las aberturas, la cantidad de manos y el margen. Deben ser valores válidos.");
+    }
+
+    const grossArea = v.metros * v.altura;
+    if (v.aberturas >= grossArea) {
+      return showError("La superficie de puertas y ventanas debe ser menor que la superficie total de pared.");
+    }
+
+    const netArea = grossArea - v.aberturas;
+    const areaWithCoats = netArea * v.manos;
+    const liters = (areaWithCoats / v.rendimiento) * (1 + v.margen / 100);
+    const paintGrams = liters * v.densidad * 1000;
+    const tio2Grams = paintGrams * 20 / 100;
+    const totalGrams = paintGrams + tio2Grams;
+
+    $("summary").textContent =
+      fmt(netArea, 2) + " m² netos · " + v.manos +
+      (v.manos === 1 ? " mano" : " manos") + " · " +
+      fmt(v.margen, 0) + "% de margen adicional.";
+
+    $("liters").textContent = fmt(liters, 2) + " L";
+    $("tio2").textContent = fmt(tio2Grams, 0) + " g";
+    $("area").textContent = fmt(netArea, 2) + " m²";
+    $("areaHands").textContent = fmt(areaWithCoats, 2) + " m²-mano";
+    $("paintMass").textContent = fmt(paintGrams, 0) + " g (" + fmt(paintGrams / 1000, 3) + " kg)";
+    $("totalMass").textContent = fmt(totalGrams, 0) + " g (" + fmt(totalGrams / 1000, 3) + " kg)";
+    $("results").style.display = "block";
+    $("results").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function showError(message) {
+    $("error").textContent = message;
+    $("error").style.display = "block";
+  }
+
+  $("calculate").addEventListener("click", calculate);
+  $("print").addEventListener("click", () => window.print());
+  $("reset").addEventListener("click", () => {
+    Object.keys(defaults).forEach(key => $(key).value = defaults[key]);
+    $("results").style.display = "none";
+    $("error").style.display = "none";
+  });
+
+  calculate();
+})();
+</script>
+</body>
+</html>
